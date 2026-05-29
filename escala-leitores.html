@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escala de Leitores</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F9F6F0;
+  --parchment: #F0EAD6;
+  --brown-light: #C4A882;
+  --brown: #8B6914;
+  --brown-dark: #5C4209;
+  --gold: #C9922A;
+  --gold-light: #E8C97A;
+  --text: #2A1F0A;
+  --text-muted: #7A6640;
+  --text-light: #B09A70;
+  --white: #FFFFFF;
+  --red-soft: #E8B4B0;
+  --red: #C0392B;
+  --green-soft: #B8D4B0;
+  --green: #2D6A2D;
+  --amber-soft: #F5DBA0;
+  --amber: #C07A10;
+  --border: rgba(139,105,20,0.2);
+  --border-strong: rgba(139,105,20,0.4);
+  --shadow: 0 2px 20px rgba(42,31,10,0.08);
+  --shadow-lg: 0 8px 40px rgba(42,31,10,0.14);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+
+.header { background: var(--brown-dark); padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; border-bottom: 3px solid var(--gold); }
+.header-title { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1.25rem; font-weight: 600; letter-spacing: 0.02em; }
+.header-subtitle { font-size: 11px; color: var(--brown-light); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2px; }
+.header-cross { font-size: 1.5rem; color: var(--gold); opacity: 0.7; }
+
+.tabs-bar { background: var(--parchment); border-bottom: 1px solid var(--border); display: flex; padding: 0 2rem; }
+.tab-btn { padding: 14px 20px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all .2s; }
+.tab-btn.active { color: var(--brown-dark); border-bottom-color: var(--gold); }
+.tab-btn:hover:not(.active) { color: var(--brown); }
+
+.panel { display: none; }
+.panel.active { display: block; }
+.container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+.card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.25rem; }
+.card-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 500; color: var(--brown-dark); margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+
+label { font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 6px; }
+select, input[type=text] { width: 100%; padding: 10px 14px; border: 1px solid var(--border-strong); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--cream); color: var(--text); outline: none; transition: border-color .2s; }
+select:focus, input:focus { border-color: var(--gold); background: var(--white); }
+
+.btn { padding: 9px 20px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; border: 1px solid var(--border-strong); background: var(--white); color: var(--text); }
+.btn:hover { background: var(--parchment); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn.primary { background: var(--brown-dark); color: var(--gold-light); border-color: var(--brown-dark); }
+.btn.primary:hover:not(:disabled) { background: var(--brown); }
+.btn.danger { background: #fff5f5; color: var(--red); border-color: var(--red-soft); }
+.btn.danger:hover { background: var(--red-soft); }
+.btn.sm { padding: 5px 12px; font-size: 12px; }
+
+.month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+.month-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--brown-dark); font-weight: 500; text-transform: capitalize; }
+.nav-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--white); color: var(--brown); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+.nav-btn:hover { background: var(--parchment); }
+
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-header { text-align: center; font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-light); padding: 6px 0; }
+.cal-cell { border-radius: 8px; border: 1px solid transparent; min-height: 54px; padding: 4px; font-size: 12px; transition: all .15s; position: relative; }
+.cal-cell.has-mass { border-color: var(--border); background: var(--white); cursor: pointer; }
+.cal-cell.has-mass:hover { border-color: var(--gold); background: #FFFCF5; }
+.cal-cell.sunday { background: #FFFEF5; border-color: rgba(201,146,42,0.3); }
+.cal-cell.saturday { background: #FAFAF8; }
+.cal-day { font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.cal-cell.sunday .cal-day { color: var(--gold); font-weight: 600; }
+.dots { display: flex; gap: 2px; flex-wrap: wrap; margin-top: 2px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+.dot.unavail { background: var(--red); }
+
+.overlay { display: none; position: fixed; inset: 0; background: rgba(42,31,10,0.55); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+.overlay.open { display: flex; }
+.modal { background: var(--white); border-radius: 16px; width: 100%; max-width: 440px; box-shadow: var(--shadow-lg); overflow: hidden; }
+.modal-header { background: var(--brown-dark); padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-family: 'Playfair Display', serif; color: var(--gold-light); font-size: 1rem; }
+.modal-date { font-size: 12px; color: var(--brown-light); margin-top: 2px; }
+.modal-close { background: none; border: none; color: var(--gold-light); font-size: 20px; cursor: pointer; line-height: 1; }
+.modal-body { padding: 1.25rem 1.5rem; }
+.mass-block { margin-bottom: 1rem; }
+.mass-block:last-child { margin-bottom: 0; }
+.mass-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.mass-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.role-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--cream); font-size: 13px; }
+.role-name { color: var(--text-muted); font-size: 12px; }
+.avail-toggle { width: 32px; height: 18px; border-radius: 9px; border: none; cursor: pointer; position: relative; transition: background .2s; background: var(--green-soft); flex-shrink: 0; }
+.avail-toggle::after { content: ''; position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--green); transition: right .2s, background .2s; }
+.avail-toggle.off { background: var(--red-soft); }
+.avail-toggle.off::after { right: auto; left: 2px; background: var(--red); }
+.modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+
+.week-block { margin-bottom: 1.5rem; }
+.week-title { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+.day-row { display: flex; align-items: stretch; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 6px; background: var(--white); }
+.day-row-date { width: 70px; flex-shrink: 0; background: var(--parchment); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 8px; border-right: 1px solid var(--border); }
+.day-row-dd { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--brown-dark); line-height: 1; }
+.day-row-dow { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; }
+.day-row-masses { flex: 1; padding: 8px 12px; display: flex; flex-direction: column; gap: 5px; }
+.mass-summary { display: flex; align-items: center; gap: 8px; font-size: 12px; flex-wrap: wrap; }
+.mass-time-badge { background: var(--parchment); border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 500; color: var(--brown); white-space: nowrap; flex-shrink: 0; }
+.reader-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+.reader-pill { padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+.pill-avail { background: var(--green-soft); color: var(--green); }
+.pill-empty { background: #F0F0F0; color: #888; font-style: italic; }
+.warn-badge { background: var(--amber-soft); border: 1px solid rgba(192,122,16,0.3); border-radius: 6px; padding: 2px 8px; font-size: 10px; color: var(--amber); font-weight: 500; white-space: nowrap; }
+.ok-badge { background: var(--green-soft); border: 1px solid rgba(45,106,45,0.3); border-radius: 6px; padding: 2px 8px; font-size: 10px; color: var(--green); font-weight: 500; white-space: nowrap; }
+
+.member-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.member-row:last-child { border-bottom: none; }
+.member-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--parchment); border: 1px solid var(--border-strong); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--brown); flex-shrink: 0; margin-right: 10px; }
+.add-row { display: flex; gap: 8px; margin-top: 12px; }
+.add-row input { margin: 0; }
+
+/* config banner */
+.config-banner { background: var(--amber-soft); border: 1px solid rgba(192,122,16,0.4); border-radius: 10px; padding: 12px 16px; margin-bottom: 1.25rem; font-size: 13px; color: var(--amber); display: flex; align-items: center; gap: 10px; }
+.config-banner.ok { background: var(--green-soft); border-color: rgba(45,106,45,0.3); color: var(--green); }
+.config-banner a { color: inherit; font-weight: 500; }
+
+/* loading spinner */
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border-strong); border-top-color: var(--gold); border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--brown-dark); color: var(--gold-light); padding: 12px 20px; border-radius: 10px; font-size: 13px; box-shadow: var(--shadow-lg); transform: translateY(80px); opacity: 0; transition: all .3s; z-index: 999; border-left: 3px solid var(--gold); }
+.toast.show { transform: translateY(0); opacity: 1; }
+
+@media (max-width: 600px) {
+  .container { padding: 1rem; }
+  .day-row-date { width: 55px; }
+  .header, .tabs-bar { padding-left: 1rem; padding-right: 1rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div>
+    <div class="header-title">Escala de Leitores</div>
+    <div class="header-subtitle">Paróquia · Grupo de Leitura</div>
+  </div>
+  <div class="header-cross">✝</div>
+</header>
+
+<div class="tabs-bar">
+  <button class="tab-btn active" onclick="showTab('leitor',this)">Sou Leitor</button>
+  <button class="tab-btn" onclick="showTab('admin',this)">Painel da Responsável</button>
+</div>
+
+<!-- ══ LEITOR ══ -->
+<div id="panel-leitor" class="panel active">
+  <div class="container">
+    <div id="banner-leitor"></div>
+    <div class="card">
+      <label>Quem é você?</label>
+      <select id="sel-leitor" onchange="onLeitorChange()">
+        <option value="">Selecione seu nome...</option>
+      </select>
+    </div>
+    <div id="leitor-content" style="display:none">
+      <div class="card">
+        <div class="month-nav">
+          <button class="nav-btn" onclick="changeMonth(-1)">&#8592;</button>
+          <span class="month-name" id="month-display"></span>
+          <button class="nav-btn" onclick="changeMonth(1)">&#8594;</button>
+        </div>
+        <div class="cal-grid" id="leitor-cal"></div>
+        <div style="margin-top:1rem;display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--text-muted);">
+          <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:4px"></span>Disponível</span>
+          <span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:4px"></span>Indisponível</span>
+        </div>
+      </div>
+      <div style="text-align:right">
+        <button class="btn primary" id="btn-save-leitor" onclick="saveLeitor()">Salvar disponibilidade</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ADMIN ══ -->
+<div id="panel-admin" class="panel">
+  <div class="container">
+    <div id="banner-admin"></div>
+
+    <!-- Config URL -->
+    <div class="card">
+      <div class="card-title">Configuração da planilha</div>
+      <label>URL do Google Apps Script (Web App)</label>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input type="text" id="script-url" placeholder="https://script.google.com/macros/s/..." style="flex:1;margin:0">
+        <button class="btn primary" onclick="saveScriptUrl()">Salvar</button>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted)">Cole aqui a URL gerada no passo 2 do guia de configuração.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Membros do grupo</div>
+      <div id="members-list"></div>
+      <div class="add-row">
+        <input type="text" id="new-member-input" placeholder="Nome do novo leitor..." onkeydown="if(event.key==='Enter')addMember()">
+        <button class="btn primary" onclick="addMember()">Adicionar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span id="admin-month-title"></span>
+        <div style="display:flex;gap:8px">
+          <button class="nav-btn" onclick="changeMonth(-1)">&#8592;</button>
+          <button class="nav-btn" onclick="changeMonth(1)">&#8594;</button>
+        </div>
+      </div>
+      <div id="admin-schedule"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL DOMINGO ══ -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-date" id="modal-date"></div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModalDirect()">Cancelar</button>
+      <button class="btn primary" onclick="saveModal()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════
+// Cole a URL do seu Google Apps Script aqui OU use o campo no painel admin
+let SCRIPT_URL = localStorage.getItem('scriptUrl') || '';
+
+const WEEKDAYS_PT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const MONTHS_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const SUNDAY_MASSES = ['07h00','11h00','17h00'];
+const ROLES_3 = ['1ª Leitura','2ª Leitura','Preces'];
+const ROLES_2 = ['1ª Leitura','Preces'];
+
+// ── state ──
+let currentMonth = new Date().getMonth();
+let currentYear  = new Date().getFullYear();
+let currentLeitor = '';
+let pendingChanges = {};
+let modalState = {};
+let modalDateKey = '';
+let members = JSON.parse(localStorage.getItem('members') || '[]');
+// availability loaded from Sheets; local cache keyed by leitor name
+let availability = {};
+
+// ── helpers ──
+function hasMass(dow) { return dow !== 1; }
+function getMasses(date) {
+  const dow = date.getDay();
+  if (dow === 0) return SUNDAY_MASSES;
+  if (!hasMass(dow)) return [];
+  return ['missa'];
+}
+function rolesFor(date) {
+  const dow = date.getDay();
+  return (dow === 0 || dow === 6) ? ROLES_3 : ROLES_2;
+}
+function dateKey(date) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+function massKey(date, mass) { return `${dateKey(date)}_${mass}`; }
+
+// ══════════════════════════════════════════
+//  SHEETS API
+// ══════════════════════════════════════════
+async function sheetsGet(action, params={}) {
+  if (!SCRIPT_URL) return null;
+  const url = new URL(SCRIPT_URL);
+  url.searchParams.set('action', action);
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+  try {
+    const r = await fetch(url.toString());
+    return await r.json();
+  } catch(e) { return null; }
+}
+
+async function sheetsPost(payload) {
+  if (!SCRIPT_URL) return null;
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    return await r.json();
+  } catch(e) { return null; }
+}
+
+async function loadAvailability(leitor) {
+  const data = await sheetsGet('getAvailability', { leitor });
+  if (data && data.availability) {
+    availability[leitor] = data.availability;
+  } else {
+    if (!availability[leitor]) availability[leitor] = {};
+  }
+}
+
+async function loadAllAvailability() {
+  const data = await sheetsGet('getAllAvailability');
+  if (data && data.availability) {
+    availability = data.availability;
+  }
+}
+
+async function saveAvailabilityToSheets(leitor, avData) {
+  return sheetsPost({ action: 'saveAvailability', leitor, availability: avData });
+}
+
+async function saveMembersToSheets(list) {
+  return sheetsPost({ action: 'saveMembers', members: list });
+}
+
+async function loadMembersFromSheets() {
+  const data = await sheetsGet('getMembers');
+  if (data && data.members && data.members.length) {
+    members = data.members;
+    localStorage.setItem('members', JSON.stringify(members));
+  }
+}
+
+// ══════════════════════════════════════════
+//  UI HELPERS
+// ══════════════════════════════════════════
+function showTab(tab, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  btn.classList.add('active');
+  if (tab === 'admin') initAdmin();
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function setBanner(elId, type, msg) {
+  const el = document.getElementById(elId);
+  if (!msg) { el.innerHTML = ''; return; }
+  el.innerHTML = `<div class="config-banner ${type==='ok'?'ok':''}">${msg}</div>`;
+}
+
+function saveScriptUrl() {
+  const val = document.getElementById('script-url').value.trim();
+  if (!val) return;
+  SCRIPT_URL = val;
+  localStorage.setItem('scriptUrl', val);
+  toast('URL salva!');
+  initAdmin();
+}
+
+// ══════════════════════════════════════════
+//  MEMBERS
+// ══════════════════════════════════════════
+function populateLeitorSelect() {
+  const sel = document.getElementById('sel-leitor');
+  const prev = sel.value;
+  sel.innerHTML = '<option value="">Selecione seu nome...</option>';
+  members.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m; opt.textContent = m;
+    sel.appendChild(opt);
+  });
+  if (prev) sel.value = prev;
+}
+
+function renderMembersList() {
+  const el = document.getElementById('members-list');
+  el.innerHTML = members.map(m => {
+    const initials = m.split(' ').slice(0,2).map(w=>w[0]).join('');
+    return `<div class="member-row">
+      <div style="display:flex;align-items:center">
+        <div class="member-avatar">${initials}</div><span>${m}</span>
+      </div>
+      <button class="btn sm danger" onclick="removeMember('${m}')">Remover</button>
+    </div>`;
+  }).join('');
+}
+
+async function addMember() {
+  const inp = document.getElementById('new-member-input');
+  const name = inp.value.trim();
+  if (!name || members.includes(name)) { inp.focus(); return; }
+  members.push(name);
+  inp.value = '';
+  localStorage.setItem('members', JSON.stringify(members));
+  populateLeitorSelect();
+  renderMembersList();
+  await saveMembersToSheets(members);
+  toast(`${name} adicionado!`);
+}
+
+async function removeMember(name) {
+  if (!confirm(`Remover ${name} do grupo?`)) return;
+  members = members.filter(m => m !== name);
+  delete availability[name];
+  if (currentLeitor === name) {
+    currentLeitor = '';
+    document.getElementById('sel-leitor').value = '';
+    document.getElementById('leitor-content').style.display = 'none';
+  }
+  localStorage.setItem('members', JSON.stringify(members));
+  populateLeitorSelect();
+  renderMembersList();
+  await saveMembersToSheets(members);
+  toast(`${name} removido.`);
+}
+
+// ══════════════════════════════════════════
+//  LEITOR VIEW
+// ══════════════════════════════════════════
+async function onLeitorChange() {
+  currentLeitor = document.getElementById('sel-leitor').value;
+  const content = document.getElementById('leitor-content');
+  if (!currentLeitor) { content.style.display = 'none'; return; }
+  content.style.display = 'block';
+  pendingChanges = {};
+
+  const btn = document.getElementById('btn-save-leitor');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Carregando...';
+
+  await loadAvailability(currentLeitor);
+
+  btn.disabled = false;
+  btn.textContent = 'Salvar disponibilidade';
+  renderLeitorCal();
+}
+
+function changeMonth(dir) {
+  currentMonth += dir;
+  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  if (currentMonth < 0)  { currentMonth = 11; currentYear--; }
+  renderLeitorCal();
+  renderAdminSchedule();
+}
+
+function getLeitorStatus(leitor, date) {
+  const masses = getMasses(date);
+  if (!masses.length) return null;
+  const av = availability[leitor] || {};
+  const ch = pendingChanges;
+  if (date.getDay() === 0) {
+    const statuses = masses.map(m => {
+      const k = massKey(date, m);
+      if (k in ch) return ch[k];
+      return k in av ? av[k] : true;
+    });
+    if (statuses.every(s => !s)) return 'unavail';
+    if (statuses.every(s => s))  return 'avail';
+    return 'partial';
+  } else {
+    const k = dateKey(date);
+    let s = k in ch ? ch[k] : (k in av ? av[k] : true);
+    return s ? 'avail' : 'unavail';
+  }
+}
+
+function renderLeitorCal() {
+  const calEl = document.getElementById('leitor-cal');
+  document.getElementById('month-display').textContent = `${MONTHS_PT[currentMonth]} ${currentYear}`;
+  const daysInMonth = new Date(currentYear, currentMonth+1, 0).getDate();
+  const startDow = new Date(currentYear, currentMonth, 1).getDay();
+
+  let html = WEEKDAYS_PT.map(d => `<div class="cal-header">${d}</div>`).join('');
+  for (let i = 0; i < startDow; i++) html += '<div class="cal-cell empty"></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(currentYear, currentMonth, d);
+    const dow = date.getDay();
+    const dk = dateKey(date);
+    const masses = getMasses(date);
+    const hasMassToday = masses.length > 0;
+    let cls = 'cal-cell' + (hasMassToday?' has-mass':'') + (dow===0?' sunday':(dow===6?' saturday':''));
+    let dotsHtml = '', onclick = '';
+
+    if (hasMassToday && currentLeitor) {
+      const status = getLeitorStatus(currentLeitor, date);
+      if (dow === 0) {
+        dotsHtml = '<div class="dots">';
+        const av = availability[currentLeitor] || {};
+        masses.forEach(m => {
+          const k = massKey(date, m);
+          const s = k in pendingChanges ? pendingChanges[k] : (k in av ? av[k] : true);
+          dotsHtml += `<div class="dot ${s?'':'unavail'}" title="${m}"></div>`;
+        });
+        dotsHtml += '</div>';
+        onclick = `onclick="openModal('${dk}')"`;
+      } else {
+        dotsHtml = `<div class="dots"><div class="dot ${status==='avail'?'':'unavail'}"></div></div>`;
+        onclick = `onclick="toggleWeekday('${dk}')"`;
+      }
+    }
+    html += `<div class="${cls}" ${onclick}><div class="cal-day">${d}</div>${dotsHtml}</div>`;
+  }
+  calEl.innerHTML = html;
+}
+
+function toggleWeekday(dk) {
+  if (!currentLeitor) return;
+  const av = availability[currentLeitor] || {};
+  const cur = dk in pendingChanges ? pendingChanges[dk] : (dk in av ? av[dk] : true);
+  pendingChanges[dk] = !cur;
+  renderLeitorCal();
+}
+
+function openModal(dk) {
+  if (!currentLeitor) return;
+  const [y,m,d] = dk.split('-').map(Number);
+  modalDateKey = dk;
+  const av = availability[currentLeitor] || {};
+  modalState = {};
+  SUNDAY_MASSES.forEach(mass => {
+    const k = `${dk}_${mass}`;
+    modalState[mass] = k in pendingChanges ? pendingChanges[k] : (k in av ? av[k] : true);
+  });
+  document.getElementById('modal-title').textContent = 'Disponibilidade do Domingo';
+  document.getElementById('modal-date').textContent = `${d} de ${MONTHS_PT[m-1]} de ${y}`;
+  renderModalBody();
+  document.getElementById('overlay').classList.add('open');
+}
+
+function renderModalBody() {
+  const body = document.getElementById('modal-body');
+  let html = '';
+  SUNDAY_MASSES.forEach((mass,i) => {
+    const avail = modalState[mass];
+    html += `<div class="mass-block">
+      <div class="mass-label">${['1ª','2ª','3ª'][i]} Missa · ${mass.replace('h',':').replace(/^0/,'')}</div>
+      <div class="role-row">
+        <div>
+          <div style="font-size:13px;font-weight:500">${avail?'✓ Disponível':'✗ Indisponível'}</div>
+          <div class="role-name">Toque para alternar</div>
+        </div>
+        <button class="avail-toggle ${avail?'':'off'}" onclick="toggleMass('${mass}')" aria-label="Alternar ${mass}"></button>
+      </div>
+    </div>`;
+  });
+  body.innerHTML = html;
+}
+
+function toggleMass(mass) { modalState[mass] = !modalState[mass]; renderModalBody(); }
+
+function saveModal() {
+  SUNDAY_MASSES.forEach(mass => { pendingChanges[`${modalDateKey}_${mass}`] = modalState[mass]; });
+  closeModalDirect();
+  renderLeitorCal();
+}
+
+function closeModal(e) { if (e.target === document.getElementById('overlay')) closeModalDirect(); }
+function closeModalDirect() { document.getElementById('overlay').classList.remove('open'); }
+
+async function saveLeitor() {
+  if (!currentLeitor) return;
+  if (!availability[currentLeitor]) availability[currentLeitor] = {};
+  Object.assign(availability[currentLeitor], pendingChanges);
+  pendingChanges = {};
+
+  const btn = document.getElementById('btn-save-leitor');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Salvando...';
+
+  const result = await saveAvailabilityToSheets(currentLeitor, availability[currentLeitor]);
+
+  btn.disabled = false;
+  btn.textContent = 'Salvar disponibilidade';
+
+  if (result && result.ok) {
+    toast('Disponibilidade salva na planilha!');
+  } else if (!SCRIPT_URL) {
+    toast('Salvo localmente (configure a URL da planilha)');
+  } else {
+    toast('Erro ao salvar. Verifique a URL do script.');
+  }
+  renderLeitorCal();
+  renderAdminSchedule();
+}
+
+// ══════════════════════════════════════════
+//  ADMIN VIEW
+// ══════════════════════════════════════════
+async function initAdmin() {
+  document.getElementById('script-url').value = SCRIPT_URL;
+  setBanner('banner-admin', '', '');
+
+  if (!SCRIPT_URL) {
+    setBanner('banner-admin', 'warn', '⚠ URL do script não configurada. Os dados serão apenas locais até que você configure a planilha.');
+  } else {
+    setBanner('banner-admin', 'warn', '<span class="spinner"></span>Carregando dados da planilha...');
+    await loadMembersFromSheets();
+    await loadAllAvailability();
+    setBanner('banner-admin', 'ok', '✓ Dados carregados da planilha com sucesso.');
+  }
+
+  populateLeitorSelect();
+  renderMembersList();
+  renderAdminSchedule();
+}
+
+function renderAdminSchedule() {
+  const monthTitle = document.getElementById('admin-month-title');
+  if (!monthTitle) return;
+  monthTitle.textContent = `${MONTHS_PT[currentMonth]} ${currentYear}`;
+
+  const el = document.getElementById('admin-schedule');
+  const daysInMonth = new Date(currentYear, currentMonth+1, 0).getDate();
+
+  let weekHtml = '', weekBuffer = [], weekNum = 1;
+  const flushWeek = () => {
+    if (!weekBuffer.length) return;
+    if (!weekBuffer.some(d => getMasses(d).length)) { weekBuffer=[]; return; }
+    weekHtml += `<div class="week-block"><div class="week-title">Semana ${weekNum}</div>${weekBuffer.map(renderDayRow).join('')}</div>`;
+    weekBuffer=[]; weekNum++;
+  };
+  for (let d=1; d<=daysInMonth; d++) {
+    const date = new Date(currentYear, currentMonth, d);
+    if (date.getDay()===0 && weekBuffer.length) flushWeek();
+    weekBuffer.push(date);
+  }
+  flushWeek();
+  el.innerHTML = weekHtml || '<div style="color:var(--text-muted);font-size:14px;padding:1rem 0">Nenhuma missa neste período.</div>';
+}
+
+function renderDayRow(date) {
+  const dow = date.getDay();
+  const masses = getMasses(date);
+  if (!masses.length) return '';
+  const dk = dateKey(date);
+
+  let massesHtml = '';
+  masses.forEach(mass => {
+    const isSunday = dow === 0;
+    const roles = rolesFor(date);
+    const availReaders = [], unavailReaders = [];
+    members.forEach(leitor => {
+      const av = availability[leitor] || {};
+      let isAvail;
+      if (isSunday) {
+        const k = massKey(date, mass);
+        isAvail = k in av ? av[k] : true;
+      } else {
+        isAvail = dk in av ? av[dk] : true;
+      }
+      (isAvail ? availReaders : unavailReaders).push(leitor);
+    });
+
+    const needed = roles.length;
+    const hasEnough = availReaders.length >= needed;
+    const timeLabel = isSunday ? mass.replace('h',':').replace(/^0/,'') : (dow===6?'Sábado':WEEKDAYS_PT[dow]);
+
+    let pillsHtml = availReaders.length === 0
+      ? `<span class="reader-pill pill-empty">Nenhum disponível</span>`
+      : availReaders.slice(0,8).map(r => {
+          const ini = r.split(' ').map(w=>w[0]).join('').slice(0,2);
+          return `<span class="reader-pill pill-avail" title="${r}">${ini}</span>`;
+        }).join('');
+
+    const badge = hasEnough
+      ? `<span class="ok-badge">✓ ${availReaders.length} disponíveis</span>`
+      : `<span class="warn-badge">⚠ ${availReaders.length}/${needed} leitores</span>`;
+
+    massesHtml += `<div class="mass-summary">
+      <span class="mass-time-badge">${timeLabel}</span>
+      <div class="reader-pills">${pillsHtml}</div>
+      ${badge}
+    </div>`;
+  });
+
+  return `<div class="day-row">
+    <div class="day-row-date">
+      <div class="day-row-dd">${date.getDate()}</div>
+      <div class="day-row-dow">${WEEKDAYS_PT[dow]}</div>
+    </div>
+    <div class="day-row-masses">${massesHtml}</div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+if (members.length === 0) {
+  members = ['Ana Paula','Carlos Eduardo','Fernanda Lima','João Marcos','Maria Conceição','Pedro Henrique'];
+}
+populateLeitorSelect();
+renderAdminSchedule();
+</script>
+</body>
+</html>
