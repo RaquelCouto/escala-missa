@@ -264,7 +264,7 @@ let currentLeitor = '';
 let pendingChanges = {};
 let modalState = {};
 let modalDateKey = '';
-let members = JSON.parse(localStorage.getItem('members') || '[]');
+let members = [];
 // availability loaded from Sheets; local cache keyed by leitor name
 let availability = {};
 
@@ -338,7 +338,6 @@ async function loadMembersFromSheets() {
   const data = await sheetsGet('getMembers');
   if (data && data.members && data.members.length) {
     members = data.members;
-    localStorage.setItem('members', JSON.stringify(members));
   }
 }
 
@@ -370,7 +369,6 @@ function saveScriptUrl() {
   const val = document.getElementById('script-url').value.trim();
   if (!val) return;
   SCRIPT_URL = val;
-  localStorage.setItem('scriptUrl', val);
   toast('URL salva!');
   initAdmin();
 }
@@ -409,7 +407,6 @@ async function addMember() {
   if (!name || members.includes(name)) { inp.focus(); return; }
   members.push(name);
   inp.value = '';
-  localStorage.setItem('members', JSON.stringify(members));
   populateLeitorSelect();
   renderMembersList();
   await saveMembersToSheets(members);
@@ -425,7 +422,6 @@ async function removeMember(name) {
     document.getElementById('sel-leitor').value = '';
     document.getElementById('leitor-content').style.display = 'none';
   }
-  localStorage.setItem('members', JSON.stringify(members));
   populateLeitorSelect();
   renderMembersList();
   await saveMembersToSheets(members);
@@ -702,13 +698,23 @@ function renderDayRow(date) {
 }
 
 // ══════════════════════════════════════════
-//  INIT
+//  INIT — carrega tudo da planilha ao abrir
 // ══════════════════════════════════════════
-if (members.length === 0) {
-  members = ['Ana Paula','Carlos Eduardo','Fernanda Lima','João Marcos','Maria Conceição','Pedro Henrique'];
+async function init() {
+  // carrega membros da planilha
+  const data = await sheetsGet('getMembers');
+  if (data && data.members && data.members.length) {
+    members = data.members;
+  }
+  // se planilha vazia ou sem conexão, usa lista padrão
+  if (members.length === 0) {
+    members = [];
+  }
+  populateLeitorSelect();
+  renderAdminSchedule();
 }
-populateLeitorSelect();
-renderAdminSchedule();
+
+init();
 </script>
 </body>
 </html>
